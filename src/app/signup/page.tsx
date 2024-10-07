@@ -1,19 +1,29 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FormEvent } from "react"
-import useSWRMutation from "swr/mutation"
-import useSWR from "swr"
+import { postData } from "@/hooks/fetchApi"
+import { useRouter } from "next/navigation"
 
 export default function Signup() {
-  
+  const navigate = useRouter()
+  const {trigger} = postData("auth/local/register")
 
-  async function signup(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function signup(FormData: FormData) {
+    const mail = FormData.get("email");
+    FormData.append("username", mail)
+    try {
+      const test = await trigger(FormData)
+      console.log(test);
+      navigate.push("/")
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
+    
   }
 
   return (
@@ -35,17 +45,17 @@ export default function Signup() {
               Enter your email below to login to your account
             </p>
           </div>
-          <form onSubmit={signup} className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
+          <form action={signup} className="grid gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">First name</Label>
-                <Input id="name" placeholder="Max" name="name" required />
+                <Input id="name" placeholder="Max" name="name"  />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="surname">Last name</Label>
-                <Input id="surname" placeholder="Robinson" name="surname" required />
+                <Input id="surname" placeholder="Robinson" name="surname"  />
               </div>
-            </div>
+            </div> */}
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -53,7 +63,7 @@ export default function Signup() {
                 type="email"
                 name="email"
                 placeholder="m@example.com"
-                required
+                
               />
             </div>
             <div className="grid gap-2">
